@@ -1,7 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "config.h"
 #include "registerset.h"
 #include "usart.h"
 
@@ -39,7 +38,8 @@ static void fifo_init(volatile struct fifo *f) {
 static int fifo_dequeue(volatile struct fifo *f, uint8_t *b) {
     if (f->in == f->out)
         return 0;
-    *b = f->buf[f->out];
+    if (b)
+        *b = f->buf[f->out];
     f->out = (f->out + 1) % USART_FIFO_SIZE;
     return 1;
 }
@@ -53,15 +53,10 @@ static int fifo_enqueue(volatile struct fifo *f, uint8_t b) {
 }
 
 void usart1_isr(void) {
-    /*
     if (*usart1_sr & USART_SR_RXNE_MASK) {
-        char c = *usart1_dr;
-        if (!fifo_enqueue(&rx_fifo, c)) {
-            fifo_dequeue(&rx_fifo, NULL);
-            fifo_enqueue(&rx_fifo, c);
-        }
+        *usart1_sr &= ~(USART_SR_RXNE_MASK);
+        fifo_enqueue(&rx_fifo, *usart1_dr);
     }
-    */
 
     if (*usart1_sr & USART_SR_TC_MASK) {
         char c;
@@ -76,6 +71,10 @@ void usart1_isr(void) {
 
 int usart_init(int slot) {
     if (slot == 0) {
+        tx = 0;
+        fifo_init(&tx_fifo);
+        fifo_init(&rx_fifo);
+
         // Enable USART1 clock.
         *rcc_apb2enr |= RCC_APB2ENR_USART1EN_MASK;
 
@@ -108,18 +107,14 @@ int usart_init(int slot) {
 
         // Enable USART1 interrupts.
         *usart1_cr1 |= USART_CR1_TCIE_MASK;
-        //*usart1_cr1 |= USART_CR1_RXNEIE_MASK;
+        *usart1_cr1 |= USART_CR1_RXNEIE_MASK;
 
         *nvic_iser1 = 0xFFFFFFFF;
 
         // Enable USART1.
         *usart1_cr1 |= USART_CR1_UE_MASK;
-        //*usart1_cr1 |= USART_CR1_RE_MASK;
+        *usart1_cr1 |= USART_CR1_RE_MASK;
         *usart1_cr1 |= USART_CR1_TE_MASK;
-
-        tx = 0;
-        fifo_init(&tx_fifo);
-        fifo_init(&rx_fifo);
 
         return 1;
     }
@@ -127,14 +122,15 @@ int usart_init(int slot) {
 }
 
 size_t usart_read(int slot, uint8_t *buf, size_t count) {
+    const uint8_t *end = buf + count;
+    int i = 0;
     if (slot == 0) {
-        /*
-        if (!(*usart1_sr & USART_SR_RXNE_MASK))
-            return 0;
-        *buf = *usart1_dr;
-        return 1;
-        */
+        while (buf < end && fifo_dequeue(&rx_fifo, buf)) {
+            i++;
+            buf++;
+        }
     }
+    return i;
 }
 
 void usart_write(int slot, const uint8_t *buf, size_t count) {
@@ -182,6 +178,8 @@ void usart_gets(int slot, char *s, size_t count) {
         }
         if (*s != '\b')
             s++;
+        else
+            s--;
     }
     *s = '\0';
 }
