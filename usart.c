@@ -38,17 +38,22 @@ static void fifo_init(volatile struct fifo *f) {
 static int fifo_dequeue(volatile struct fifo *f, uint8_t *b) {
     if (f->in == f->out)
         return 0;
+
     if (b)
         *b = f->buf[f->out];
+
     f->out = (f->out + 1) % USART_FIFO_SIZE;
+
     return 1;
 }
 
 static int fifo_enqueue(volatile struct fifo *f, uint8_t b) {
     if (f->in == ((f->out - 1 + USART_FIFO_SIZE) % USART_FIFO_SIZE))
         return 0;
+
     f->buf[f->in] = b;
     f->in = (f->in + 1) % USART_FIFO_SIZE;
+
     return 1;
 }
 
@@ -109,7 +114,8 @@ int usart_init(int slot) {
         *usart1_cr1 |= USART_CR1_TCIE_MASK;
         *usart1_cr1 |= USART_CR1_RXNEIE_MASK;
 
-        *nvic_iser1 = 0xFFFFFFFF;
+        // Enable USART1 interrupts in NVIC.
+        *nvic_iser1 |= NVIC_ISER1_USART1_MASK;
 
         // Enable USART1.
         *usart1_cr1 |= USART_CR1_UE_MASK;
@@ -124,12 +130,14 @@ int usart_init(int slot) {
 size_t usart_read(int slot, uint8_t *buf, size_t count) {
     const uint8_t *end = buf + count;
     int i = 0;
+
     if (slot == 0) {
         while (buf < end && fifo_dequeue(&rx_fifo, buf)) {
             i++;
             buf++;
         }
     }
+
     return i;
 }
 
@@ -138,6 +146,7 @@ void usart_write(int slot, const uint8_t *buf, size_t count) {
         const uint8_t *end = buf + count;
         while (buf < end) {
             asm volatile ("cpsid i");
+
             if (!tx) {
                 tx = 1;
                 *usart1_dr = *buf;
@@ -149,7 +158,9 @@ void usart_write(int slot, const uint8_t *buf, size_t count) {
                     asm volatile ("cpsid i");
                 }
             }
+
             asm volatile ("cpsie i");
+
             buf++;
         }
     }
@@ -170,16 +181,20 @@ void usart_puts(int slot, const char *s) {
 
 void usart_gets(int slot, char *s, size_t count) {
     char *end = s + count - 1;
+
     while (s < end) {
         usart_getc(slot, s);
+
         if (*s == '\r') {
             *s = '\0';
             return;
         }
+
         if (*s != '\b')
             s++;
         else
             s--;
     }
+
     *s = '\0';
 }

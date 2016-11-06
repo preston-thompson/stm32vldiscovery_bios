@@ -3,6 +3,8 @@
 #define NVIC_ISER0_OFFS 0x00
 #define NVIC_ISER1_OFFS 0x04
 
+#define NVIC_ISER1_USART1_MASK (1 << 5)
+
 #define RCC_ADDR 0x40021000
 
 #define RCC_APB2RSTR_OFFS 0x0C
