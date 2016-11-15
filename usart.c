@@ -3,6 +3,7 @@
 
 #include "registerset.h"
 #include "usart.h"
+#include "interrupt.h"
 
 static volatile uint32_t *nvic_iser1 =
     (volatile uint32_t *)(NVIC_ADDR + NVIC_ISER1_OFFS);
@@ -92,7 +93,6 @@ int usart_init(int slot) {
         // Set baud rate.
         *usart1_brr &= ~USART_BRR_DIV_FRACTION_MASK;
         *usart1_brr |= 1 << USART_BRR_DIV_FRACTION_POS;
-
         *usart1_brr &= ~USART_BRR_DIV_MANTISSA_MASK;
         *usart1_brr |= 52 << USART_BRR_DIV_MANTISSA_POS;
 
@@ -145,7 +145,8 @@ void usart_write(int slot, const uint8_t *buf, size_t count) {
     if (slot == 0) {
         const uint8_t *end = buf + count;
         while (buf < end) {
-            asm volatile ("cpsid i");
+            //asm volatile ("cpsid i");
+            interrupt_disable();
 
             if (!tx) {
                 tx = 1;
@@ -154,12 +155,15 @@ void usart_write(int slot, const uint8_t *buf, size_t count) {
                 while (1) {
                     if (fifo_enqueue(&tx_fifo, *buf))
                         break;
-                    asm volatile ("cpsie i");
-                    asm volatile ("cpsid i");
+                    //asm volatile ("cpsie i");
+                    interrupt_enable();
+                    //asm volatile ("cpsid i");
+                    interrupt_disable();
                 }
             }
 
-            asm volatile ("cpsie i");
+            //asm volatile ("cpsie i");
+            interrupt_enable();
 
             buf++;
         }
