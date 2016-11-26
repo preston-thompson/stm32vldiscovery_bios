@@ -5,15 +5,15 @@
 
 #include <stddef.h>
 
-int usart_init(int slot);
+int usart_init(void);
 
-void usart_putc(int slot, char c);
-void usart_getc(int slot, char *c);
+void usart_putc(char c);
+void usart_getc(char *c);
 
-void usart_puts(int slot, const char *s);
-void usart_gets(int slot, char *s, size_t count);
+void usart_puts(const char *s);
+void usart_gets(char *s, size_t count);
 
-size_t usart_read(int slot, uint8_t *buf, size_t count);
-void usart_write(int slot, const uint8_t *buf, size_t count);
+size_t usart_read(uint8_t *buf, size_t count);
+void usart_write(const uint8_t *buf, size_t count);
 
 #endif

@@ -75,119 +75,112 @@ void usart1_isr(void) {
     }
 }
 
-int usart_init(int slot) {
-    if (slot == 0) {
-        tx = 0;
-        fifo_init(&tx_fifo);
-        fifo_init(&rx_fifo);
+int usart_init(void) {
+    tx = 0;
+    fifo_init(&tx_fifo);
+    fifo_init(&rx_fifo);
 
-        // Enable USART1 clock.
-        *rcc_apb2enr |= RCC_APB2ENR_USART1EN_MASK;
+    // Enable USART1 clock.
+    *rcc_apb2enr |= RCC_APB2ENR_USART1EN_MASK;
 
-        // Enable AFIO clock.
-        *rcc_apb2enr |= RCC_APB2ENR_AFIOEN_MASK;
+    // Enable AFIO clock.
+    *rcc_apb2enr |= RCC_APB2ENR_AFIOEN_MASK;
 
-        // Enable GPIO port A clock.
-        *rcc_apb2enr |= RCC_APB2ENR_IOPAEN_MASK;
+    // Enable GPIO port A clock.
+    *rcc_apb2enr |= RCC_APB2ENR_IOPAEN_MASK;
 
-        // Set baud rate.
-        *usart1_brr &= ~USART_BRR_DIV_FRACTION_MASK;
-        *usart1_brr |= 1 << USART_BRR_DIV_FRACTION_POS;
-        *usart1_brr &= ~USART_BRR_DIV_MANTISSA_MASK;
-        *usart1_brr |= 52 << USART_BRR_DIV_MANTISSA_POS;
+    // Set baud rate.
+    *usart1_brr &= ~USART_BRR_DIV_FRACTION_MASK;
+    *usart1_brr |= 1 << USART_BRR_DIV_FRACTION_POS;
+    *usart1_brr &= ~USART_BRR_DIV_MANTISSA_MASK;
+    *usart1_brr |= 52 << USART_BRR_DIV_MANTISSA_POS;
 
-        // Enable TX pin.
-        *gpio_porta_crh &= ~GPIO_CRH_MODE9_MASK;
-        *gpio_porta_crh |= 3 << GPIO_CRH_MODE9_POS;
+    // Enable TX pin.
+    *gpio_porta_crh &= ~GPIO_CRH_MODE9_MASK;
+    *gpio_porta_crh |= 3 << GPIO_CRH_MODE9_POS;
 
-        *gpio_porta_crh &= ~GPIO_CRH_CNF9_MASK;
-        *gpio_porta_crh |= 2 << GPIO_CRH_CNF9_POS;
+    *gpio_porta_crh &= ~GPIO_CRH_CNF9_MASK;
+    *gpio_porta_crh |= 2 << GPIO_CRH_CNF9_POS;
 
-        // Enable RX pin.
-        *gpio_porta_crh &= ~GPIO_CRH_MODE10_MASK;
-        *gpio_porta_crh |= 0 << GPIO_CRH_MODE10_POS;
+    // Enable RX pin.
+    *gpio_porta_crh &= ~GPIO_CRH_MODE10_MASK;
+    *gpio_porta_crh |= 0 << GPIO_CRH_MODE10_POS;
 
-        *gpio_porta_crh &= ~GPIO_CRH_CNF10_MASK;
-        *gpio_porta_crh |= 2 << GPIO_CRH_CNF10_POS;
+    *gpio_porta_crh &= ~GPIO_CRH_CNF10_MASK;
+    *gpio_porta_crh |= 2 << GPIO_CRH_CNF10_POS;
 
-        // Enable USART1 interrupts.
-        *usart1_cr1 |= USART_CR1_TCIE_MASK;
-        *usart1_cr1 |= USART_CR1_RXNEIE_MASK;
+    // Enable USART1 interrupts.
+    *usart1_cr1 |= USART_CR1_TCIE_MASK;
+    *usart1_cr1 |= USART_CR1_RXNEIE_MASK;
 
-        // Enable USART1 interrupts in NVIC.
-        *nvic_iser1 |= NVIC_ISER1_USART1_MASK;
+    // Enable USART1 interrupts in NVIC.
+    *nvic_iser1 |= NVIC_ISER1_USART1_MASK;
 
-        // Enable USART1.
-        *usart1_cr1 |= USART_CR1_UE_MASK;
-        *usart1_cr1 |= USART_CR1_RE_MASK;
-        *usart1_cr1 |= USART_CR1_TE_MASK;
+    // Enable USART1.
+    *usart1_cr1 |= USART_CR1_UE_MASK;
+    *usart1_cr1 |= USART_CR1_RE_MASK;
+    *usart1_cr1 |= USART_CR1_TE_MASK;
 
-        return 1;
-    }
-    return 0;
+    return 1;
 }
 
-size_t usart_read(int slot, uint8_t *buf, size_t count) {
+size_t usart_read(uint8_t *buf, size_t count) {
     const uint8_t *end = buf + count;
     int i = 0;
 
-    if (slot == 0) {
-        while (buf < end && fifo_dequeue(&rx_fifo, buf)) {
-            i++;
-            buf++;
-        }
+    while (buf < end && fifo_dequeue(&rx_fifo, buf)) {
+        i++;
+        buf++;
     }
 
     return i;
 }
 
-void usart_write(int slot, const uint8_t *buf, size_t count) {
-    if (slot == 0) {
-        const uint8_t *end = buf + count;
-        while (buf < end) {
-            //asm volatile ("cpsid i");
-            interrupt_disable();
+void usart_write(const uint8_t *buf, size_t count) {
+    const uint8_t *end = buf + count;
+    while (buf < end) {
+        //asm volatile ("cpsid i");
+        interrupt_disable();
 
-            if (!tx) {
-                tx = 1;
-                *usart1_dr = *buf;
-            } else {
-                while (1) {
-                    if (fifo_enqueue(&tx_fifo, *buf))
-                        break;
-                    //asm volatile ("cpsie i");
-                    interrupt_enable();
-                    //asm volatile ("cpsid i");
-                    interrupt_disable();
-                }
+        if (!tx) {
+            tx = 1;
+            *usart1_dr = *buf;
+        } else {
+            while (1) {
+                if (fifo_enqueue(&tx_fifo, *buf))
+                    break;
+                //asm volatile ("cpsie i");
+                interrupt_enable();
+                //asm volatile ("cpsid i");
+                interrupt_disable();
             }
-
-            //asm volatile ("cpsie i");
-            interrupt_enable();
-
-            buf++;
         }
+
+        //asm volatile ("cpsie i");
+        interrupt_enable();
+
+        buf++;
     }
 }
 
-void usart_putc(int slot, char c) {
-    usart_write(slot, &c, 1);
+void usart_putc(char c) {
+    usart_write(&c, 1);
 }
 
-void usart_getc(int slot, char *c) {
-    while (!usart_read(slot, c, 1));
+void usart_getc(char *c) {
+    while (!usart_read(c, 1));
 }
 
-void usart_puts(int slot, const char *s) {
+void usart_puts(const char *s) {
     while (*s)
-        usart_write(slot, s++, 1);
+        usart_write(s++, 1);
 }
 
-void usart_gets(int slot, char *s, size_t count) {
+void usart_gets(char *s, size_t count) {
     char *end = s + count - 1;
 
     while (s < end) {
-        usart_getc(slot, s);
+        usart_getc(s);
 
         if (*s == '\r') {
             *s = '\0';
