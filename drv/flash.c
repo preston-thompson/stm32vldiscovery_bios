@@ -26,6 +26,7 @@ static void flash_program(uint16_t halfword, uint32_t addr) {
     *flash_cr |= REG_FLASH_CR_PG_MASK;
     *((volatile uint16_t *)(REG_FLASH_MEM_ADDR + addr)) = halfword;
     while (*flash_sr & REG_FLASH_SR_BSY_MASK);
+    *flash_cr &= ~REG_FLASH_CR_PG_MASK;
 }
 
 static void flash_erase(uint32_t addr) {
@@ -33,6 +34,7 @@ static void flash_erase(uint32_t addr) {
     *flash_ar = REG_FLASH_MEM_ADDR + addr;
     *flash_cr |= REG_FLASH_CR_STRT_MASK;
     while (*flash_sr & REG_FLASH_SR_BSY_MASK);
+    *flash_cr &= ~REG_FLASH_CR_PER_MASK;
 }
 
 void flash_init(void) {
@@ -51,5 +53,6 @@ void flash_write(const uint8_t *buf, size_t count, uint32_t addr) {
         halfword |= *(buf + 1) << 8;
         flash_program(halfword, addr);
         buf += 2;
+        addr += 2;
     }
 }

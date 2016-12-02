@@ -8,12 +8,12 @@ void main(void) {
     uint8_t flash_test[4] = { 0xBE, 0xEF, 0xDE, 0xAD };
 
     usart_init();
+    flash_init();
 
     interrupt_enable();
 
     usart_puts("stm32vldiscovery_os boot\r\n");
 
-    flash_init();
     flash_write(flash_test, sizeof(flash_test), 0x800);
 
     while (1) {
