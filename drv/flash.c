@@ -22,16 +22,16 @@ static void flash_unlock(void) {
     *flash_keyr = REG_FLASH_KEY2;
 }
 
-static void flash_program(uint16_t halfword, uint32_t addr) {
+static void flash_program(uint8_t page, size_t offs, uint16_t word) {
     *flash_cr |= REG_FLASH_CR_PG_MASK;
-    *((volatile uint16_t *)(REG_FLASH_MEM_ADDR + addr)) = halfword;
+    *((volatile uint16_t *)(FLASH_START_ADDR + page * FLASH_PAGE_SIZE + offs)) = word;
     while (*flash_sr & REG_FLASH_SR_BSY_MASK);
     *flash_cr &= ~REG_FLASH_CR_PG_MASK;
 }
 
-static void flash_erase(uint32_t addr) {
+static void flash_erase(uint8_t page) {
     *flash_cr |= REG_FLASH_CR_PER_MASK;
-    *flash_ar = REG_FLASH_MEM_ADDR + addr;
+    *flash_ar = FLASH_START_ADDR + page * FLASH_PAGE_SIZE;
     *flash_cr |= REG_FLASH_CR_STRT_MASK;
     while (*flash_sr & REG_FLASH_SR_BSY_MASK);
     *flash_cr &= ~REG_FLASH_CR_PER_MASK;
@@ -41,18 +41,14 @@ void flash_init(void) {
     flash_unlock();
 }
 
-void flash_read(uint8_t *buf, size_t count, uint32_t addr) {
+void flash_read(uint8_t *dst, uint8_t page, size_t offs, size_t num) {
+    for (size_t i = 0; i < num; i++)
+        *dst++ = *((volatile uint8_t *)(FLASH_START_ADDR + page * FLASH_PAGE_SIZE + offs));
 }
 
-void flash_write(const uint8_t *buf, size_t count, uint32_t addr) {
-    const uint8_t *end = buf + count;
-    uint16_t halfword;
-    flash_erase(addr);
-    while (buf < end) {
-        halfword = *buf;
-        halfword |= *(buf + 1) << 8;
-        flash_program(halfword, addr);
-        buf += 2;
-        addr += 2;
-    }
+void flash_write(uint8_t page, const uint8_t *src, size_t num) {
+    for (uint8_t i = 0; i <= num / FLASH_PAGE_SIZE; i++)
+        flash_erase(page + i);
+    for (size_t i = 0; i < num; i += 2, src += 2)
+        flash_program(page, i, *src + (*(src + 1) << 8));
 }

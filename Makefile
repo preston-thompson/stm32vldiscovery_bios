@@ -1,8 +1,9 @@
 CC = arm-none-eabi-gcc
 AS = arm-none-eabi-as
 LD = arm-none-eabi-ld
+GIT_VERSION := $(shell git rev-parse --short HEAD)
 OBJDUMP = arm-none-eabi-objdump
-CFLAGS = -g -c -nostdlib -nostartfiles -ffreestanding -mthumb -mcpu=cortex-m3 -march=armv7-m
+CFLAGS = -g -c -nostdlib -nostartfiles -ffreestanding -mthumb -mcpu=cortex-m3 -march=armv7-m -DGIT_VERSION=\"$(GIT_VERSION)\"
 LDFLAGS = -T link.ld
 
 all: image.elf
@@ -16,8 +17,14 @@ boot.o: boot.s
 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c
+
+usart.o: usart.c
 	$(CC) $(CFLAGS) drv/usart.c
+
+flash.o: flash.c
 	$(CC) $(CFLAGS) drv/flash.c
+
+interrupt.o: interrupt.s
 	$(AS) -o drv/interrupt.o drv/interrupt.s
 
 clean:

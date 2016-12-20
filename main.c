@@ -5,16 +5,18 @@
 
 void main(void) {
     char buf[32];
-    uint8_t flash_test[4] = { 0xBE, 0xEF, 0xDE, 0xAD };
+    uint32_t flash_test = 0xdeadbeef;
 
     usart_init();
     flash_init();
 
     interrupt_enable();
 
-    usart_puts("stm32vldiscovery_os boot\r\n");
+    usart_puts("\r\nstm32vldiscovery_os boot\r\ngit version: ");
+    usart_puts(GIT_VERSION);
+    usart_puts("\r\n");
 
-    flash_write(flash_test, sizeof(flash_test), 0x800);
+    flash_write(2, (uint8_t*)(&flash_test), sizeof(flash_test));
 
     while (1) {
         usart_gets(buf, sizeof(buf));
