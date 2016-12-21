@@ -123,6 +123,7 @@ size_t usart_read(uint8_t *buf, size_t count) {
 
 void usart_write(const uint8_t *buf, size_t count) {
     const uint8_t *end = buf + count;
+    int interrupt_state = interrupt_get_state();
     while (buf < end) {
         interrupt_disable();
 
@@ -138,7 +139,8 @@ void usart_write(const uint8_t *buf, size_t count) {
             }
         }
 
-        interrupt_enable();
+        if (interrupt_state)
+            interrupt_enable();
 
         buf++;
     }
