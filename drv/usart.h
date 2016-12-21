@@ -5,7 +5,7 @@
 
 #include <stddef.h>
 
-int usart_init(void);
+void usart_init(void);
 
 void usart_putc(char c);
 void usart_getc(char *c);

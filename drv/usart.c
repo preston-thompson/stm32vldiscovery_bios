@@ -3,14 +3,13 @@
 
 #include "registerset.h"
 #include "usart.h"
+#include "gpio.h"
 #include "interrupt.h"
 
 static volatile uint32_t * const nvic_iser1 =
     (volatile uint32_t *)(REG_NVIC_ADDR + REG_NVIC_ISER1_OFFS);
 static volatile uint32_t * const rcc_apb2enr =
     (volatile uint32_t *)(REG_RCC_ADDR + REG_RCC_APB2ENR_OFFS);
-static volatile uint32_t * const gpio_porta_crh =
-    (volatile uint32_t *)(REG_GPIO_PORTA_ADDR + REG_GPIO_CRH_OFFS);
 static volatile uint32_t * const usart1_cr1 =
     (volatile uint32_t *)(REG_USART1_ADDR + REG_USART_CR1_OFFS);
 static volatile uint32_t * const usart1_brr =
@@ -75,19 +74,13 @@ void usart1_isr(void) {
     }
 }
 
-int usart_init(void) {
+void usart_init(void) {
     tx = 0;
     fifo_init(&tx_fifo);
     fifo_init(&rx_fifo);
 
     // Enable USART1 clock.
     *rcc_apb2enr |= REG_RCC_APB2ENR_USART1EN_MASK;
-
-    // Enable AFIO clock.
-    *rcc_apb2enr |= REG_RCC_APB2ENR_AFIOEN_MASK;
-
-    // Enable GPIO port A clock.
-    *rcc_apb2enr |= REG_RCC_APB2ENR_IOPAEN_MASK;
 
     // Set baud rate.
     *usart1_brr &= ~REG_USART_BRR_DIV_FRACTION_MASK;
@@ -96,18 +89,12 @@ int usart_init(void) {
     *usart1_brr |= 52 << REG_USART_BRR_DIV_MANTISSA_POS;
 
     // Enable TX pin.
-    *gpio_porta_crh &= ~REG_GPIO_CRH_MODE9_MASK;
-    *gpio_porta_crh |= 3 << REG_GPIO_CRH_MODE9_POS;
-
-    *gpio_porta_crh &= ~REG_GPIO_CRH_CNF9_MASK;
-    *gpio_porta_crh |= 2 << REG_GPIO_CRH_CNF9_POS;
+    struct gpio_pin tx_pin = {'A', 9};
+    gpio_setup_output_pin(tx_pin, GPIO_OUTPUT_MODE_AF_PUSH_PULL, GPIO_OUTPUT_SPEED_50MHZ);
 
     // Enable RX pin.
-    *gpio_porta_crh &= ~REG_GPIO_CRH_MODE10_MASK;
-    *gpio_porta_crh |= 0 << REG_GPIO_CRH_MODE10_POS;
-
-    *gpio_porta_crh &= ~REG_GPIO_CRH_CNF10_MASK;
-    *gpio_porta_crh |= 2 << REG_GPIO_CRH_CNF10_POS;
+    struct gpio_pin rx_pin = {'A', 10};
+    gpio_setup_input_pin(rx_pin, GPIO_INPUT_MODE_PULL);
 
     // Enable USART1 interrupts.
     *usart1_cr1 |= REG_USART_CR1_TCIE_MASK;
@@ -120,8 +107,6 @@ int usart_init(void) {
     *usart1_cr1 |= REG_USART_CR1_UE_MASK;
     *usart1_cr1 |= REG_USART_CR1_RE_MASK;
     *usart1_cr1 |= REG_USART_CR1_TE_MASK;
-
-    return 1;
 }
 
 size_t usart_read(uint8_t *buf, size_t count) {

@@ -31,14 +31,8 @@
 #define REG_GPIO_PORTE_ADDR 0x40011800
     #define REG_GPIO_CRL_OFFS 0x00
     #define REG_GPIO_CRH_OFFS 0x04
-        #define REG_GPIO_CRH_MODE9_MASK 0x30
-        #define REG_GPIO_CRH_MODE9_POS 4
-        #define REG_GPIO_CRH_CNF9_MASK 0xC0
-        #define REG_GPIO_CRH_CNF9_POS 6
-        #define REG_GPIO_CRH_MODE10_MASK 0x300
-        #define REG_GPIO_CRH_MODE10_POS 8
-        #define REG_GPIO_CRH_CNF10_MASK 0xC00
-        #define REG_GPIO_CRH_CNF10_POS 10
+    #define REG_GPIO_IDR_OFFS 0x08
+    #define REG_GPIO_ODR_OFFS 0x0C
 
 // USART
 #define REG_USART1_INTERRUPT_VECTOR_ADDR 0x000000D4
