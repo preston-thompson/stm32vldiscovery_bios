@@ -4,6 +4,7 @@
 #define USART_FIFO_SIZE 64
 
 #include <stddef.h>
+#include <stdint.h>
 
 void usart_init(void);
 

@@ -1,8 +1,6 @@
 #ifndef _GPIO_H
 #define _GPIO_H
 
-#include <stddef.h>
-
 enum gpio_pin_mode {
     GPIO_INPUT_MODE_ANALOG = 0,
     GPIO_INPUT_MODE_FLATING,

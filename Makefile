@@ -8,8 +8,8 @@ LDFLAGS = -T link.ld
 
 all: image.elf
 
-image.elf: boot.o main.o drv/gpio.o drv/usart.o drv/interrupt.o drv/flash.o
-	$(LD) $(LDFLAGS) -o image.elf boot.o main.o drv/gpio.o drv/usart.o drv/interrupt.o drv/flash.o
+image.elf: boot.o main.o str.o drv/gpio.o drv/usart.o drv/interrupt.o drv/flash.o drv/rtc.o
+	$(LD) $(LDFLAGS) -o image.elf boot.o main.o str.o drv/gpio.o drv/usart.o drv/interrupt.o drv/flash.o drv/rtc.o
 	$(OBJDUMP) -D image.elf > image.list
 
 boot.o: boot.s
@@ -17,6 +17,9 @@ boot.o: boot.s
 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c
+
+str.o: str.c
+	$(CC) $(CFLAGS) str.c
 
 gpio.o: gpio.c
 	$(CC) $(CFLAGS) drv/gpio.c
@@ -26,6 +29,9 @@ usart.o: usart.c
 
 flash.o: flash.c
 	$(CC) $(CFLAGS) drv/flash.c
+
+rtc.o: rtc.c
+	$(CC) $(CFLAGS) drv/rtc.c
 
 interrupt.o: interrupt.s
 	$(AS) -o drv/interrupt.o drv/interrupt.s

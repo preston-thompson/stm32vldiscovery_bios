@@ -2,6 +2,7 @@
 #define _FLASH_H
 
 #include <stddef.h>
+#include <stdint.h>
 
 void flash_init(void);
 void flash_read(uint8_t *dst, uint8_t page, size_t offs, size_t num);

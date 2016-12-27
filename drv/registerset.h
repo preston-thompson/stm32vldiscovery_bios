@@ -13,6 +13,9 @@
         #define REG_RCC_APB1ENR_USART3EN_MASK (1 << 18)
         #define REG_RCC_APB1ENR_USART4EN_MASK (1 << 19)
         #define REG_RCC_APB1ENR_USART5EN_MASK (1 << 20)
+        #define REG_RCC_APB1ENR_BKPEN_MASK (1 << 27)
+        #define REG_RCC_APB1ENR_PWREN_MASK (1 << 28)
+        #define REG_RCC_APB1ENR_DACEN_MASK (1 << 29)
     #define REG_RCC_APB2ENR_OFFS 0x18
         #define REG_RCC_APB2ENR_USART1EN_MASK (1 << 14)
         #define REG_RCC_APB2ENR_IOPEEN_MASK (1 << 6)
@@ -22,6 +25,13 @@
         #define REG_RCC_APB2ENR_IOPAEN_MASK (1 << 2)
         #define REG_RCC_APB2ENR_AFIOEN_MASK (1 << 0)
     #define REG_RCC_CIR_OFFS 0x08
+    #define REG_RCC_BDCR_OFFS 0x20
+        #define REG_RCC_BDCR_RTCEN_MASK (1 << 15)
+
+// PWR
+#define REG_PWR_ADDR 0x40007000
+    #define REG_PWR_CR_OFFS 0x00
+        #define REG_PWR_CR_DBP_MASK (1 << 8)
 
 // GPIO
 #define REG_GPIO_PORTA_ADDR 0x40010800
@@ -33,6 +43,21 @@
     #define REG_GPIO_CRH_OFFS 0x04
     #define REG_GPIO_IDR_OFFS 0x08
     #define REG_GPIO_ODR_OFFS 0x0C
+
+// RTC
+#define REG_RTC_ADDR 0x40002800
+    #define REG_RTC_CRH_OFFS 0x00
+    #define REG_RTC_CRL_OFFS 0x04
+        #define REG_RTC_CRL_RTOFF_MASK (1 << 5)
+        #define REG_RTC_CRL_CNF_MASK (1 << 4)
+    #define REG_RTC_PRLH_OFFS 0x08
+    #define REG_RTC_PRLL_OFFS 0x0C
+    #define REG_RTC_DIVH_OFFS 0x10
+    #define REG_RTC_DIVL_OFFS 0x14
+    #define REG_RTC_CNTH_OFFS 0x18
+    #define REG_RTC_CNTL_OFFS 0x1C
+    #define REG_RTC_ALRH_OFFS 0x20
+    #define REG_RTC_ALRL_OFFS 0x24
 
 // USART
 #define REG_USART1_INTERRUPT_VECTOR_ADDR 0x000000D4
