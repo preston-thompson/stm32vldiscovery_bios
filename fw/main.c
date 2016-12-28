@@ -6,6 +6,7 @@
 #include "drv/interrupt.h"
 
 static const struct gpio_pin blue_led = {'C', 8};
+static const struct gpio_pin green_led = {'C', 9};
 
 void main(void) {
     gpio_init();
