@@ -3,13 +3,13 @@ AS = arm-none-eabi-as
 LD = arm-none-eabi-ld
 GIT_VERSION := $(shell git rev-parse --short HEAD)
 OBJDUMP = arm-none-eabi-objdump
-CFLAGS = -g -c -nostdlib -nostartfiles -ffreestanding -mthumb -mcpu=cortex-m3 -march=armv7-m -DGIT_VERSION=\"$(GIT_VERSION)\"
+CFLAGS = -g -c -nostdlib -nostartfiles -ffreestanding -mthumb -mcpu=cortex-m3 -march=armv7-m
 LDFLAGS = -T link.ld
 
 all: image.elf
 
-image.elf: boot.o main.o str.o drv/gpio.o drv/usart.o drv/interrupt.o drv/flash.o drv/rtc.o
-	$(LD) $(LDFLAGS) -o image.elf boot.o main.o str.o drv/gpio.o drv/usart.o drv/interrupt.o drv/flash.o drv/rtc.o
+image.elf: boot.o main.o rpc.o drv/gpio.o drv/usart.o drv/interrupt.o drv/flash.o drv/rtc.o
+	$(LD) $(LDFLAGS) -o image.elf boot.o main.o rpc.o drv/gpio.o drv/usart.o drv/interrupt.o drv/flash.o drv/rtc.o
 	$(OBJDUMP) -D image.elf > image.list
 
 boot.o: boot.s
@@ -18,8 +18,8 @@ boot.o: boot.s
 main.o: main.c
 	$(CC) $(CFLAGS) main.c
 
-str.o: str.c
-	$(CC) $(CFLAGS) str.c
+rpc.o: rpc.c
+	$(CC) $(CFLAGS) rpc.c
 
 gpio.o: gpio.c
 	$(CC) $(CFLAGS) drv/gpio.c

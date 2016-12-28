@@ -3,7 +3,7 @@
 
 enum gpio_pin_mode {
     GPIO_INPUT_MODE_ANALOG = 0,
-    GPIO_INPUT_MODE_FLATING,
+    GPIO_INPUT_MODE_FLOATING,
     GPIO_INPUT_MODE_PULL,
 
     GPIO_OUTPUT_MODE_GPIO_PUSH_PULL = 0,
@@ -20,7 +20,7 @@ enum gpio_pin_speed {
 
 struct gpio_pin {
     char port;
-    int pin;
+    uint8_t pin;
 };
 
 void gpio_init(void);

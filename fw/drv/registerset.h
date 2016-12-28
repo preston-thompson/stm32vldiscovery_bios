@@ -18,6 +18,7 @@
         #define REG_RCC_APB1ENR_DACEN_MASK (1 << 29)
     #define REG_RCC_APB2ENR_OFFS 0x18
         #define REG_RCC_APB2ENR_USART1EN_MASK (1 << 14)
+        #define REG_RCC_APB2ENR_SPI1EN_MASK (1 << 12)
         #define REG_RCC_APB2ENR_IOPEEN_MASK (1 << 6)
         #define REG_RCC_APB2ENR_IOPDEN_MASK (1 << 5)
         #define REG_RCC_APB2ENR_IOPCEN_MASK (1 << 4)
@@ -82,6 +83,16 @@
     #define REG_USART_CR2_OFFS 0x10
     #define REG_USART_CR3_OFFS 0x14
     #define REG_USART_GTPR_OFFS 0x18
+
+// SPI
+#define REG_SPI1_ADDR 0x40013000
+    #define REG_SPI_CR1_OFFS 0x00
+    #define REG_SPI_CR2_OFFS 0x04
+    #define REG_SPI_SR_OFFS 0x08
+    #define REG_SPI_DR_OFFS 0x0C
+    #define REG_SPI_CRCPR_OFFS 0x10
+    #define REG_SPI_RXCRCR_OFFS 0x14
+    #define REG_SPI_TXCRCR_OFFS 0x18
 
 // Flash
 #define REG_FLASH_KEY1 0x45670123

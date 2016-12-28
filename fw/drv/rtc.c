@@ -47,6 +47,6 @@ void rtc_set_count(uint32_t count) {
     rtc_exit_configuration_mode();
 }
 
-uint32_t rtc_get_time(void) {
+uint32_t rtc_get_count(void) {
     return ((*rtc_cnth) << 16) + *rtc_cntl;
 }
