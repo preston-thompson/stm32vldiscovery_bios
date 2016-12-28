@@ -45,6 +45,25 @@
     #define REG_GPIO_IDR_OFFS 0x08
     #define REG_GPIO_ODR_OFFS 0x0C
 
+// DAC
+#define REG_DAC_ADDR 0x40007400
+    #define REG_DAC_CR_OFFS 0x00
+        #define REG_DAC_CR_TSEL2_MASK (7 << 19)
+        #define REG_DAC_CR_TSEL2_POS 19
+        #define REG_DAC_CR_TEN2_MASK (1 << 18)
+        #define REG_DAC_CR_BOFF2_MASK (1 << 17)
+        #define REG_DAC_CR_EN2_MASK (1 << 16)
+        #define REG_DAC_CR_TSEL1_MASK (7 << 3)
+        #define REG_DAC_CR_TSEL1_POS 3
+        #define REG_DAC_CR_TEN1_MASK (1 << 2)
+        #define REG_DAC_CR_BOFF1_MASK (1 << 1)
+        #define REG_DAC_CR_EN1_MASK (1 << 0)
+    #define REG_DAC_SWTRIGR_OFFS 0x04
+        #define REG_DAC_SWTRIGR_SWTRIG1_MASK (1 << 0)
+        #define REG_DAC_SWTRIGR_SWTRIG2_MASK (1 << 1)
+    #define REG_DAC_DHR12R1_OFFS 0x08
+    #define REG_DAC_DHR12R2_OFFS 0x14
+
 // RTC
 #define REG_RTC_ADDR 0x40002800
     #define REG_RTC_CRH_OFFS 0x00

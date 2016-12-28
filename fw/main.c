@@ -3,6 +3,7 @@
 #include "drv/usart.h"
 #include "drv/flash.h"
 #include "drv/rtc.h"
+#include "drv/dac.h"
 #include "drv/interrupt.h"
 
 static const struct gpio_pin blue_led = {'C', 8};
@@ -20,6 +21,13 @@ void main(void) {
     interrupt_enable();
 
     gpio_set_pin(blue_led, 1);
+
+    dac_enable_channel(1);
+
+    while (1)
+        for (uint16_t i = 0; i < 0x1000; i++) {
+            dac_set_output(1, i);
+        }
 
     rpc_listen();
 }

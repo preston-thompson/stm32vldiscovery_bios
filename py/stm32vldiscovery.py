@@ -38,6 +38,13 @@ def gpio_setup_output_pin(pin, mode, speed):
     cmd += bytes([pin[1], mode, speed])
     ser.write(cmd)
 
+def gpio_setup_input_pin(pin, mode):
+    global ser
+    cmd = b'\x00\x00'
+    cmd += bytes(pin[0], "utf-8")
+    cmd += bytes([pin[1], mode])
+    ser.write(cmd)
+
 def init(path):
     global ser
     ser = serial.Serial(path, 115200)
