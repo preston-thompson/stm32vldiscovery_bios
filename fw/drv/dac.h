@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+void dac_init(void);
 void dac_enable_channel(int channel);
 void dac_set_output(int channel, uint16_t level);
 

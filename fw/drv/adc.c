@@ -39,6 +39,7 @@ void adc_init(void) {
 
 void adc_enable_channel(int channel) {
 
+    // Setup pin as an analog input.
     gpio_setup_input_pin(adc_pins[channel], GPIO_INPUT_MODE_ANALOG);
 
 }

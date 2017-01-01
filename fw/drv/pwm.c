@@ -124,6 +124,7 @@ void pwm_enable_channel(int timer, int channel) {
         GPIO_OUTPUT_SPEED_10MHZ
     );
 
+    // Enable the channel.
     switch (channel) {
         case 0:
             *tim_ccer[timer] |= REG_TIM_CCER_CC1E_MASK;

@@ -27,10 +27,12 @@ static size_t rx_buf_count = 0;
 
 void usart1_isr(void) {
 
+    // Check if there is data in the received data register.
     if (*usart1_sr & REG_USART_SR_RXNE_MASK) {
 
         *usart1_sr &= ~(REG_USART_SR_RXNE_MASK);
 
+        // Add the byte to the receive buffer if there's room.
         if (rx_buf_count < sizeof(rx_buf))
             rx_buf[rx_buf_count++] = *usart1_dr;
 
@@ -76,17 +78,21 @@ size_t usart_read(void *dst, size_t count) {
 
         size_t rv = rx_buf_count;
 
+        // Read all the data into the destination buffer.
         for (int i = 0; i < rx_buf_count; i++)
             *dstb++ = rx_buf[i];
 
+        // Set the receive buffer count as being empty.
         rx_buf_count = 0;
         return rv;
 
     } else {
 
+        // Read the requested amount into the destination buffer.
         for (int i = 0; i < count; i++)
             *dstb++ = rx_buf[i];
 
+        // Shift the receive buffer's contents back.
         for (int i = 0; i < rx_buf_count - count; i++)
             rx_buf[i] = rx_buf[i + count];
 
@@ -99,6 +105,7 @@ size_t usart_read(void *dst, size_t count) {
 
 size_t usart_in_waiting(void) {
 
+    // Return how many bytes are in the receive buffer.
     return rx_buf_count;
 
 }

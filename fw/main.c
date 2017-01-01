@@ -12,19 +12,24 @@ static const struct gpio_pin blue_led = {'C', 8};
 static const struct gpio_pin green_led = {'C', 9};
 
 void main(void) {
+
     gpio_init();
     usart_init();
-    flash_init();
     pwm_init();
     adc_init();
+    dac_init();
+
+    // Set up the RTC for a frequency of 1 Hz.
     rtc_set_prescaler(0x7fff);
     rtc_set_count(0);
 
+    // Turn on the blue LED for good measure. Blue is a nice color.
     gpio_setup_output_pin(blue_led, GPIO_OUTPUT_MODE_GPIO_PUSH_PULL, GPIO_OUTPUT_SPEED_2MHZ);
+    gpio_set_pin(blue_led, 1);
 
     interrupt_enable();
 
-    gpio_set_pin(blue_led, 1);
-
+    // Listen for commands.
     rpc_listen();
+
 }
