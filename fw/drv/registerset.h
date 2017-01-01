@@ -16,9 +16,13 @@
         #define REG_RCC_APB1ENR_BKPEN_MASK (1 << 27)
         #define REG_RCC_APB1ENR_PWREN_MASK (1 << 28)
         #define REG_RCC_APB1ENR_DACEN_MASK (1 << 29)
+        #define REG_RCC_APB1ENR_TIM2EN_MASK (1 << 0)
+        #define REG_RCC_APB1ENR_TIM3EN_MASK (1 << 1)
+        #define REG_RCC_APB1ENR_TIM4EN_MASK (1 << 2)
     #define REG_RCC_APB2ENR_OFFS 0x18
         #define REG_RCC_APB2ENR_USART1EN_MASK (1 << 14)
         #define REG_RCC_APB2ENR_SPI1EN_MASK (1 << 12)
+        #define REG_RCC_APB2ENR_ADC1EN_MASK (1 << 9)
         #define REG_RCC_APB2ENR_IOPEEN_MASK (1 << 6)
         #define REG_RCC_APB2ENR_IOPDEN_MASK (1 << 5)
         #define REG_RCC_APB2ENR_IOPCEN_MASK (1 << 4)
@@ -44,6 +48,63 @@
     #define REG_GPIO_CRH_OFFS 0x04
     #define REG_GPIO_IDR_OFFS 0x08
     #define REG_GPIO_ODR_OFFS 0x0C
+
+// TIM2, TIM3, TIM4
+#define REG_TIM2_ADDR 0x40000000
+#define REG_TIM3_ADDR 0x40000400
+#define REG_TIM4_ADDR 0x40000800
+    #define REG_TIM_CR1_OFFS 0x00
+        #define REG_TIM_CR1_ARPE_MASK (1 << 7)
+        #define REG_TIM_CR1_CEN_MASK (1 << 0)
+    #define REG_TIM_CR2_OFFS 0x04
+    #define REG_TIM_SMCR_OFFS 0x08
+    #define REG_TIM_DIER_OFFS 0x0C
+    #define REG_TIM_SR_OFFS 0x10
+    #define REG_TIM_EGR_OFFS 0x14
+        #define REG_TIM_EGR_UG_MASK (1 << 0)
+    #define REG_TIM_CCMR1_OFFS 0x18
+        #define REG_TIM_CCMR1_OC2M_MASK (7 << 12)
+        #define REG_TIM_CCMR1_OC2M_POS 12
+        #define REG_TIM_CCMR1_OC2PE_MASK (1 << 11)
+        #define REG_TIM_CCMR1_OC1M_MASK (7 << 4)
+        #define REG_TIM_CCMR1_OC1M_POS 4
+        #define REG_TIM_CCMR1_OC1PE_MASK (1 << 3)
+    #define REG_TIM_CCMR2_OFFS 0x1C
+        #define REG_TIM_CCMR2_OC4M_MASK (7 << 12)
+        #define REG_TIM_CCMR2_OC4M_POS 12
+        #define REG_TIM_CCMR2_OC4PE_MASK (1 << 11)
+        #define REG_TIM_CCMR2_OC3M_MASK (7 << 4)
+        #define REG_TIM_CCMR2_OC3M_POS 4
+        #define REG_TIM_CCMR2_OC3PE_MASK (1 << 3)
+    #define REG_TIM_CCER_OFFS 0x20
+        #define REG_TIM_CCER_CC4E_MASK (1 << 12)
+        #define REG_TIM_CCER_CC3E_MASK (1 << 8)
+        #define REG_TIM_CCER_CC2E_MASK (1 << 4)
+        #define REG_TIM_CCER_CC1E_MASK (1 << 0)
+    #define REG_TIM_CNT_OFFS 0x24
+    #define REG_TIM_PSC_OFFS 0x28
+    #define REG_TIM_ARR_OFFS 0x2C
+    #define REG_TIM_CCR1_OFFS 0x34
+    #define REG_TIM_CCR2_OFFS 0x38
+    #define REG_TIM_CCR3_OFFS 0x3C
+    #define REG_TIM_CCR4_OFFS 0x40
+    #define REG_TIM_DCR_OFFS 0x48
+    #define REG_TIM_DMAR_OFFS 0x4C
+
+// ADC
+#define REG_ADC1_ADDR 0x40012400
+    #define REG_ADC_SR_OFFS 0x00
+        #define REG_ADC_SR_EOC_MASK (1 << 1)
+    #define REG_ADC_CR1_OFFS 0x04
+    #define REG_ADC_CR2_OFFS 0x08
+        #define REG_ADC_CR2_ADON_MASK (1 << 0)
+        #define REG_ADC_CR2_CAL_MASK (1 << 2)
+    #define REG_ADC_SMPR1_OFFS 0x0C
+    #define REG_ADC_SMPR2_OFFS 0x10
+    #define REG_ADC_DR_OFFS 0x4C
+    #define REG_ADC_SQR3_OFFS 0x34
+        #define REG_ADC_SQR3_SQ1_MASK (15)
+        #define REG_ADC_SQR3_SQ1_POS 0
 
 // DAC
 #define REG_DAC_ADDR 0x40007400
