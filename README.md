@@ -27,6 +27,8 @@ while True:
     time.sleep(0.1)
 ```
 
+Documentation for the drivers can be found in `stm32vldiscovery.py` and in the drivers themselves under `drv/`.
+
 ## How does this work?
 The peripheral drivers' interfaces are wrapped in `fw/rpc.c` and each driver function call is assigned a 2 byte code. To call
 one of the drivers' functions, the function code is sent over the UART and then the function arguments are sent over the UART.
