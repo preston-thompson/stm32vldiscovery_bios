@@ -17,7 +17,7 @@ stm32vldiscovery.init('/dev/ttyAMA0')
 
 stm32vldiscovery.gpio_setup_output_pin(
     green_led,
-    stm32vldiscovery.GPIO_OUTPUT_MODE_PIO_PUSH_PULL,
+    stm32vldiscovery.GPIO_OUTPUT_MODE_GPIO_PUSH_PULL,
     stm32vldiscovery.GPIO_OUTPUT_SPEED_2MHZ
 )
 
